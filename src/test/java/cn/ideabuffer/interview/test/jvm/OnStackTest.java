@@ -4,6 +4,8 @@ import org.junit.Test;
 
 /**
  * Created by sangjian on 2018/1/24 0024.
+ * -server -Xmn1m -Xmx20m -Xss1m -XX:+PrintGCDetails 
+ * -XX:-DoEscapeAnalysis  -XX:+TieredCompilation -XX:CompileThreshold=100
  */
 public class OnStackTest {
 

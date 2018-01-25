@@ -1,370 +1,124 @@
-## Java基础
-
-### Vector,ArrayList, LinkedList的区别是什么？
-
-答：
-
-1. Vector、ArrayList都是以类似数组的形式存储在内存中，LinkedList则以链表的形式进行存储。
-
-2. List中的元素有序、允许有重复的元素，Set中的元素无序、不允许有重复元素。
-
-3. Vector线程同步，ArrayList、LinkedList线程不同步。
-
-4. LinkedList适合指定位置插入、删除操作，不适合查找；ArrayList、Vector适合查找，不适合指定位置的插入、删除操作。
-
-5. ArrayList在元素填满容器时会自动扩充容器大小的50%，而Vector则是100%，因此ArrayList更节省空间。
-
-### HashTable, HashMap，TreeMap区别？
-
-答：
-
-1. HashTable线程同步，HashMap非线程同步。
-
-2. HashTable不允许<键,值>有空值，HashMap允许<键,值>有空值。
-
-3. HashTable使用Enumeration，HashMap使用Iterator。
-
-4. HashTable中hash数组的默认大小是11，增加方式的old*2+1，HashMap中hash数组的默认大小是16，增长方式一定是2的指数倍。
-
-5. TreeMap能够把它保存的记录根据键排序，默认是按升序排序。
-
-### HashMap的数据结构
-
-jdk1.8之前list + 链表
-jdk1.8之后list + 链表（当链表长度到8时，转化为红黑树）
-
-### HashMap的扩容因子  
- 
-默认0.75，也就是会浪费1/4的空间，达到扩容因子时，会将list扩容一倍，0.75 是时间与空间一个平衡值；
- 
-### 多线程修改HashMap 
-
-多线程同时写入，同时执行扩容操作，多线程扩容可能死锁、丢数据；可以对HashMap 加入同步锁Collections.synchronizedMap(hashMap)，但是效率很低，因为该锁是互斥锁，同一时刻只能有一个线程执行读写操作，这时候应该使用ConcurrentHashMap
-
-### 说说你知道的几个Java集合类：list、set、queue、map实现类
-
-### 描述一下ArrayList和LinkedList各自实现和区别
-
-### LinkedList 是单向链表还是双向链表？
-
-### Java中的队列都有哪些，有什么区别
-
-### 反射中，Class.forName和classloader的区别
-
-[java反射中，Class.forName和classloader的区别(代码说话)](http://blog.csdn.net/qq_27093465/article/details/52262340)
-
-### Java7、Java8的新特性
-
-### Java数组和链表两种结构的操作效率，在哪些情况下(从开头开始，从结尾开始，从中间开始)，哪些操作(插入，查找，删除)的效率高
-
-### 讲讲IO里面的常见类，字节流、字符流、接口、实现类、方法阻塞
-
-### 讲讲NIO
-
-### 缓冲区
-
-### 虚拟内存&&内存空间的映射
-
-### 三个channel使用 ServerSocketChannel||SocketChannel||FileChannel
-
-### String 编码UTF-8 和GBK的区别
-
-### 什么时候使用字节流、什么时候使用字符流
-
-### 递归读取文件夹下的文件，代码怎么实现
-
-### 和传统IO的相比，和Netty相比
-
-## Java并发
-### 怎么提高并发量，请列举你所知道的方案？
-### 系统的用户量有多少？多用户并发访问时如何解决？
-
-### 说说阻塞队列的实现：可以参考ArrayBlockingQueue的底层实现（锁和同步都行）；
-
-### 进程通讯的方式：消息队列，共享内存，信号量，socket通讯等；
-
-### 用过并发包的哪些类；
-
-### 什么地方用了多线程；
-
-### Excutors可以产生哪些线程池；
-
-### 为什么要用线程池；
-
-### 线程池的基础概念
-
-core,maxPoolSize,keepalive
-执行任务时
-1. 如果线程池中线程数量 < core，新建一个线程执行任务；
-2. 如果线程池中线程数量 >= core ,则将任务放入任务队列
-3. 如果线程池中线程数量 >= core 且 < maxPoolSize，则创建新的线程；
-4. 如果线程池中线程数量 > core ,当线程空闲时间超过了keepalive时，则会销毁线程；由此可见线程池的队列如果是无界队列，那么设置线程池最大数量是无效的；
-
-### 自带线程池的各种坑
-
-1. Executors.newFixedThreadPool(10);
-固定大小的线程池：
-它的实现new ThreadPoolExecutor(10, 10, 0L, TimeUnit.MILLISECONDS,new LinkedBlockingQueue<Runnable>());
-初始化一个指定线程数的线程池，其中corePoolSize == maximumPoolSize，使用LinkedBlockingQuene作为阻塞队列，当线程池没有可执行任务时，也不会释放线程。
-由于LinkedBlockingQuene的特性，这个队列是无界的，若消费不过来，会导致内存被任务队列占满，最终oom；
-
-2. Executors.newCachedThreadPool();
-缓存线程池：
-它的实现new ThreadPoolExecutor(0,Integer.MAX_VALUE,60L, TimeUnit.SECONDS,new SynchronousQueue<Runnable>());
-初始化一个可以缓存线程的线程池，默认缓存60s，线程池的线程数可达到Integer.MAX_VALUE，即2147483647，内部使用SynchronousQueue作为阻塞队列；和newFixedThreadPool创建的线程池不同，newCachedThreadPool在没有任务执行时，当线程的空闲时间超过keepAliveTime，会自动释放线程资源，当提交新任务时，如果没有空闲线程，则创建新线程执行任务，会导致一定的系统开销，因为线程池的最大值了Integer.MAX_VALUE，会导致无限创建线程；所以，使用该线程池时，一定要注意控制并发的任务数，否则创建大量的线程会导致严重的性能问题;
-
-3. Executors.newSingleThreadExecutor()
-单线程线程池：
-同newFixedThreadPool线程池一样，队列用的是LinkedBlockingQueue无界队列，可以无限的往里面添加任务，直到内存溢出；
-
-### volatile关键字的用法：使多线程中的变量可见；
-
-### 线程的几种状态
-
-### Java创建线程之后，直接调用start()方法和run()的区别
-
-### 常用的线程池模式以及不同线程池的使用场景
-
-### newFixedThreadPool此种线程池如果线程数达到最大值后会怎么办，底层原理。
-
-### 多线程之间通信的同步问题，synchronized锁的是对象，衍伸出和synchronized相关很多的具体问题，例如同一个类不同方法都有synchronized锁，一个对象是否可以同时访问。或者一个类的static构造方法加上synchronized之后的锁的影响。
-
-### 了解可重入锁的含义，以及ReentrantLock 和synchronized的区别
-
-### 同步的数据结构，例如concurrentHashMap的源码理解以及内部实现原理，为什么他是同步的且效率高
-
-### atomicinteger和Volatile等线程安全操作的关键字的理解和使用
-
-### CAS和volatile关键字
-通过volatile修饰的变量可以保证线程之间的可见性，但并不能保证字节码指令的原子执行，在多线程并发执行下，无法做到线程安全，得到正确的结果
-1.加锁(低效率)
-2.cas
-引用占小狼的简书https://www.jianshu.com/p/24ffe531e9ee
-
-### 线程间通信，wait和notify
-
-### 定时线程的使用
-
-### 场景：在一个主线程中，要求有大量(很多很多)子线程执行完之后，主线程才执行完成。多种方式，考虑效率。
-
-### 进程和线程的区别
-
-### 什么叫线程安全？举例说明
-
-### 线程的几种状态
-
-### 并发、同步的接口或方法
-
-### HashMap 是否线程安全，为何不安全。 ConcurrentHashMap，线程安全，为何安全。底层实现是怎么样的。
-
-### J.U.C下的常见类的使用。 ThreadPool的深入考察； BlockingQueue的使用。（take，poll的区别，put，offer的区别）；原子类的实现。
-
-### 简单介绍下多线程的情况，从建立一个线程开始。然后怎么控制同步过程，多线程常用的方法和结构
-
-### volatile的理解
-
-### 有个每秒钟5k个请求，查询手机号所属地的笔试题(记得不完整，没列出)，如何设计算法?请求再多，比如5w，如何设计整个系统?
-
-### 高并发情况下，我们系统是如何支撑大量的请求的
-
-### 集群如何同步会话状态
-
-### 负载均衡的原理
-
-### 如果有一个特别大的访问量，到数据库上，怎么做优化（DB设计，DBIO，SQL优化，Java优化）
-
-### 如果出现大面积并发，在不增加服务器的基础上，如何解决服务器响应不及时问题“。
-
-### 假如你的项目出现性能瓶颈了，你觉得可能会是哪些方面，怎么解决问题。
-
-### 如何查找 造成 性能瓶颈出现的位置，是哪个位置照成性能瓶颈。
-
-### 你的项目中使用过缓存机制吗？有没用用户非本地缓存
-
-
-
-## Java内存模型
-## 设计模式
-
-### 单例模式：饱汉、饿汉。以及饿汉中的延迟加载,双重检查
-
-### 工厂模式、装饰者模式、观察者模式。
-
-### 工厂方法模式的优点（低耦合、高内聚，开放封闭原则）
-
-### 如何理解观察者模式？
-### 列举出你说熟悉的设计模式，并对其中的一种的使用举一个例子。
-
-## JVM
-
-### User user = new User()  做了什么操作，申请了哪些内存？
-
-1. new User();  创建一个User对象，内存分配在堆上
-2. User user;   创建一个引用，内存分配在栈上
-3. =            将User对象地址赋值给引用
-
-### Java的内存模型以及GC算法
-
-### jvm性能调优都做了什么
-
-### 介绍JVM中7个区域，然后把每个区域可能造成内存的溢出的情况说明
-
-### 介绍GC 和GC Root不正常引用
-
-### 自己从classload 加载方式，加载机制说开去，从程序运行时数据区，讲到内存分配，讲到String常量池，讲到JVM垃圾回收机制，算法，hotspot。反正就是各种扩展
-
-### jvm 如何分配直接内存， new 对象如何不分配在堆而是栈上，常量池解析
-
-### 数组多大放在 JVM 老年代（不只是设置 PretenureSizeThreshold ，问通常多大，没做过一问便知）
-
-### 老年代中数组的访问方式
-
-### GC 算法，永久代对象如何 GC ， GC 有环怎么处理
-
-### 谁会被 GC ，什么时候 GC
-
-### 如果想不被 GC 怎么办
-
-### 如果想在 GC 中生存 1 次怎么办
-
-### 分析System.gc()方法
-
-### JVM 选项 -XX:+UseCompressedOops 有什么作用？为什么要使用？
-
-当你将你的应用从 32 位的 JVM 迁移到 64 位的 JVM 时，由于对象的指针从 32 位增加到了 64 位，因此堆内存会突然增加，差不多要翻倍。这也会对 CPU 缓存（容量比内存小很多）的数据产生不利的影响。因为，迁移到 64 位的 JVM 主要动机在于可以指定最大堆大小，通过压缩 OOP 可以节省一定的内存。通过 -XX:+UseCompressedOops 选项，JVM 会使用 32 位的 OOP，而不是 64 位的 OOP。
-
-## 开源框架
-
-### hibernate和ibatis的区别
-
-### 讲讲mybatis的连接池。
-
-### spring框架中需要引用哪些jar包，以及这些jar包的用途
-
-### springMVC的原理
-
-### springMVC注解的意思
-
-### spring中beanFactory和ApplicationContext的联系和区别
-
-### spring注入的几种方式（循环注入）
-
-### spring如何实现事物管理的
-
-### springIOC
-
-### spring AOP的原理
-
-### hibernate中的1级和2级缓存的使用方式以及区别原理（Lazy-Load的理解）
-
-### Hibernate的原理体系架构，五大核心接口，Hibernate对象的三种状态转换，事务管理。
-
-
-## 分布式框架
-## redis
-
-### redis和memcache的区别；
-
-### 用redis做过什么；
-
-### redis是如何持久化的：rdb和aof；
-
-### redis集群如何同步；
-
-### redis的数据添加过程是怎样的：哈希槽；
-
-### redis的淘汰策略有哪些；
-
-### redis有哪些数据结构；
-
-## zookeeper
-### zookeeper是什么；
-
-### zookeeper哪里用到；
-
-### zookeeper的选主过程；
-
-### zookeeper集群之间如何通讯；
-
-### 你们的zookeeper的节点加密是用的什么方式；
-
-### 分布式锁的实现过程；
-
-## kafka
-
-### 传递保证语义：
-
-* At most once：消息可能会丢，但绝不会重复传递。
-* At least once：消息绝不会丢，但可能会重复传递。
-* Exactly once： 每条消息只会被传递一次。
-
-### 生产者的“Exactly once”语义方案
-
-当生产者向Kafka发送消息，且正常得到响应的时候，可以确保生产者不会产生重复的消息。但是，如果生产者发送消息后，遇到网络问题，无法获取响应，生产者就无法判断该消息是否成功提交给了Kafka。根据生产者的机制，我们知道，当出现异常时，会进行消息重传，这就可能出现“At least one”语义。为了实现“Exactly once”语义，这里提供两个可选方案：
-
-* 每个分区只有一个生产者写入消息，当出现异常或超时的情况时，生产者就要查询此分区的最后一个消息，用来决定后续操作是消息重传还是继续发送。
-* 为每个消息添加一个全局唯一主键，生产者不做其他特殊处理，按照之前分析方式进行重传，由消费者对消息进行去重，实现“Exactly once”语义。
-
-如果业务数据产生消息可以找到合适的字段作为主键，或是有一个全局ID生成器，可以优先考虑选用第二种方案。
-
-
-### 消费者的“Exactly once”语义方案
-
-为了实现消费者的“Exactly once”语义，在这里提供一种方案，供读者参考：消费者将关闭自动提交offset的功能且不再手动提交offset，这样就不使用Offsets Topic这个内部Topic记录其offset，而是由消费者自己保存offset。这里利用事务的原子性来实现“Exactly once”语义，我们将offset和消息处理结果放在一个事务中，事务执行成功则认为此消息被消费，否则事务回滚需要重新消费。当出现消费者宕机重启或Rebalance操作时，消费者可以从关系型数据库中找到对应的offset，然后调用KafkaConsumer.seek()方法手动设置消费位置，从此offset处开始继续消费。
-
-
-
-## dubbo
-## TCP/IP
-## 算法
-
-### 使用随机算法产生一个数，要求把1-1000W之间这些数全部生成。（考察高效率，解决产生冲突的问题）
-
-### 两个有序数组的合并排序
-
-### 一个数组的倒序
-
-### 计算一个正整数的正平方根
-
-### 说白了就是常见的那些查找、排序算法以及各自的时间复杂度
-
-### 二叉树的遍历算法
-
-### DFS,BFS算法
-
-### 比较重要的数据结构，如链表，队列，栈的基本理解及大致实现。
-
-### 排序算法与时空复杂度（快排为什么不稳定，为什么你的项目还在用）
-
-### 逆波兰计算器
-
-### Hoffman 编码
-
-### 查找树与红黑树
-
-## 设计与思想
-
-### 重构过代码没有？说说经验；
-
-### 一千万的用户实时排名如何实现；
-
-### 五万人并发抢票怎么实现；
-
-### 有个每秒钟5k个请求，查询手机号所属地的笔试题(记得不完整，没列出)，如何设计算法?请求再多，比如5w，如何设计整个系统?
-
-### 高并发情况下，我们系统是如何支撑大量的请求的
-
-### 集群如何同步会话状态
-
-
 # part2
+
+## LinkedList(无界队列) 
+
+可以在队头队尾加入、删除、访问元素
+
+## LinkedHashMap
+
+### 概述
+继承HashMap；
+双向链表；
+内部有一个LinkedHashMap.Entry<K,V>来代替HashMap.Entry<K,V>, 重写了newNode方法，在put方法中创建新节点的时调用此方法返回一个LinkedHashMap.Entry<K,V>节点；
+
+### 数据节点类
+ 	static class Entry<K,V> extends HashMap.Node<K,V> {
+        Entry<K,V> before, after;//前后节点
+        Entry(int hash, K key, V value, Node<K,V> next) {
+            super(hash, key, value, next);
+        }
+    }
+   两个成员变量before和after可以看出，这是一个双向链表 
+    
+### 重要的成员变量
+
+//链表的头节点
+transient LinkedHashMap.Entry<K,V> head;
+//链表的尾节点
+transient LinkedHashMap.Entry<K,V> tail;
+//在get操作后，是否将该节点放入到队尾，默认值为false，可以通过构造方法设置其值public LinkedHashMap(int initialCapacity,float loadFactor,boolean accessOrder)
+final boolean accessOrder;
+
+### 重要的方法newNode
+在put(入队)方法执行时调用
+ 	Node<K,V> newNode(int hash, K key, V value, Node<K,V> e) {
+        LinkedHashMap.Entry<K,V> p =
+            new LinkedHashMap.Entry<K,V>(hash, key, value, e);
+        linkNodeLast(p);
+        return p;
+    }
+linkNodeLast方法，负责将节点加入链表尾部，将新节点的before指向tail，然后将tail指向新节点
+
+### 重要的方法afterNodeAccese
+
+在get(读取)的时候调用（如果accessOrder==true则调用该方法，将当前节点移动到队尾tail）
+
+	 void afterNodeAccess(Node<K,V> e) { // move node to last
+        LinkedHashMap.Entry<K,V> last;
+        if (accessOrder && (last = tail) != e) {
+            LinkedHashMap.Entry<K,V> p =
+                (LinkedHashMap.Entry<K,V>)e, b = p.before, a = p.after;
+            p.after = null;
+            if (b == null)
+                head = a;
+            else
+                b.after = a;
+            if (a != null)
+                a.before = b;
+            else
+                last = b;
+            if (last == null)
+                head = p;
+            else {
+                p.before = last;
+                last.after = p;
+            }
+            tail = p;
+            ++modCount;
+        }
+    }
+
+
+## LinkedBlockingQueue(有界队列)
+
+### 队列大小
+	如果不指定大小，可以认为是无界队列，因为队列默认大小为Integer.MAX_VALUE
+  public LinkedBlockingQueue() {
+        this(Integer.MAX_VALUE);
+  }
+
+### 数据节点类
+	static class Node<E> {
+        E item;//存储数据
+
+        /**
+         * One of:
+         * - the real successor Node
+         * - this Node, meaning the successor is head.next
+         * - null, meaning there is no successor (this is the last node)
+         */
+        Node<E> next;//链表的下一个节点
+
+        Node(E x) { item = x; }
+    }
+	可以看出这一个单向链表    
+    
+    
+### 重要的成员变量
+ 
+	//队列最大存放多少个对象  
+    private final int capacity;  
+    //当前队列中存的对象个数  
+    private final AtomicInteger count = new AtomicInteger();  
+    //队列头节点  
+    transient Node<E> head;  
+    //队列尾节点  
+    private transient Node<E> last;  
+    //出队时的独占锁，对队列头加锁   
+    private final ReentrantLock takeLock = new ReentrantLock();  
+    //队列是否是空的，用来阻塞take方法  
+    private final Condition notEmpty = takeLock.newCondition();  
+    //入队时的独占锁，对队列尾加锁  
+    private final ReentrantLock putLock = new ReentrantLock();  
+    //队列是否是慢的用来阻塞 put方法  
+    private final Condition notFull = putLock.newCondition();
 
 ## HashMap
 
 ### 数据结构  
 
 jdk1.8之前list + 链表
-jdk1.8之后list + 链表（当链表长度到8时，转化为红黑树）
+jdk1.8之后list + 链表/红黑树（当链表长度到8时，转化为红黑树）
 
 ### 扩容因子  
  
@@ -381,9 +135,9 @@ jdk1.8之后list + 链表（当链表长度到8时，转化为红黑树）
 core,maxPoolSize,keepalive
 执行任务时
 1. 如果线程池中线程数量 < core，新建一个线程执行任务；
-2. 如果线程池中线程数量 >= core ,则将任务放入任务队列
+2. 如果线程池中线程数量 >= core ,则将任务放入任务队列 （由此可见线程池的队列如果是无界队列，那么设置线程池最大数量是无效的）；
 3. 如果线程池中线程数量 >= core 且 < maxPoolSize，则创建新的线程；
-4. 如果线程池中线程数量 > core ,当线程空闲时间超过了keepalive时，则会销毁线程；由此可见线程池的队列如果是无界队列，那么设置线程池最大数量是无效的；
+4. 如果线程池中线程数量 > core ,当线程空闲时间超过了keepalive时，则会销毁线程；
 
 
 ### 自带线程池的各种坑
@@ -391,7 +145,7 @@ core,maxPoolSize,keepalive
 固定大小的线程池：
 它的实现new ThreadPoolExecutor(10, 10, 0L, TimeUnit.MILLISECONDS,new LinkedBlockingQueue<Runnable>());
 初始化一个指定线程数的线程池，其中corePoolSize == maximumPoolSize，使用LinkedBlockingQuene作为阻塞队列，当线程池没有可执行任务时，也不会释放线程。
-由于LinkedBlockingQuene的特性，这个队列是无界的，若消费不过来，会导致内存被任务队列占满，最终oom；
+由于LinkedBlockingQuene的特性，这个队列大小默认是Integer.MAX_VALUE，若消费不过来，会导致内存被任务队列占满，最终oom；
 
 2. Executors.newCachedThreadPool();
 缓存线程池：
@@ -400,7 +154,7 @@ core,maxPoolSize,keepalive
 
 3. Executors.newSingleThreadExecutor()
 单线程线程池：
-同newFixedThreadPool线程池一样，队列用的是LinkedBlockingQueue无界队列，可以无限的往里面添加任务，知道内存溢出；
+同newFixedThreadPool线程池一样，队列用的是LinkedBlockingQueue，队列大小默认是Integer.MAX_VALUE,可以无限的往里面添加任务，直到内存溢出；
 
 ## JMM
 
@@ -411,21 +165,22 @@ core,maxPoolSize,keepalive
 1. cpu管线导致指令重排序
 2. jvm编译器导致指令重排序
 
-### 可见性
-
-工作内存与主内存中数据不一致；
-
-#### as-if-serial语义
+### as-if-serial语义
 
 as-if-serial语义的意思指：不管怎么重排序（编译器和处理器为了提高并行度），（单线程）程序的执行结果不能被改变。编译器，runtime 和处理器都必须遵守as-if-serial语义。
 为了遵守as-if-serial语义，编译器和处理器不会对存在数据依赖关系的操作做重排序，因为这种重排序会改变执行结果。但是，如果操作之间不存在数据依赖关系，这些操作可能被编译器和处理器重排序。
 
+### 可见性
+
+工作内存与主内存中数据不一致；
+
 ### 解决 指令重排序与可见性
 
-内存屏障：
+#### 内存屏障：
+
 在每个volatile写操作的前面插入一个StoreStore屏障。
 在每个volatile写操作的后面插入一个StoreLoad屏障。
-在每个volatile读操作的后面插入一个LoadLoad屏障。
+在每个volatile读操作的前面插入一个LoadLoad屏障。
 在每个volatile读操作的后面插入一个LoadStore屏障。
 
 #### volatile 
@@ -452,7 +207,7 @@ http://ifeve.com/java-memory-model/
 
 ### mvc
 
-serverltDispatcher -- 》 doDispatcher --> 获取handler
+serverltDispatcher -- 》 doDispatcher --> 获取handler（controller，interceptor） --》获取handlerAdeptor（controller中的方法）
 
 ## JVM
 
