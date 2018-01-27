@@ -1,0 +1,5 @@
+网页没法提交图片我共享在有道云笔记了
+Redis的持久化方式RDB和AOF，以及在内存数据存储达到最大内存之后的淘汰策略。
+http://note.youdao.com/noteshare?id=a58bd9c3150e9080fd48b10d88768626
+自己从classload 加载方式，加载机制说开去，从程序运行时数据区，讲到内存分配，讲到String常量池，讲到JVM垃圾回收机制，算法，hotspot。反正就是各种扩展.
+http://note.youdao.com/noteshare?id=1a01219a798cdd474b01257c4f5f7961
