@@ -18,3 +18,28 @@
 
 * 如果进群超过半数以上master挂掉，无论是否有slave集群进入fail状态,所以集群中至少应该有奇数个节点，所以至少有三个节点，每个节点至少有一个备份节点,
 * redis cluster 为了保证数据的高可用性，加入了主从模式，一个主节点对应一个或多个从节点，主节点提供数据存取，从节点则是从主节点拉取数据备份，当这个主节点挂掉后，就会有这个从节点选取一个来充当主节点，从而保证集群不会挂掉。
+
+### Spring事务的传播机制
+
+在 spring的 TransactionDefinition接口中一共定义了六种事务传播属性：
+* PROPAGATION_REQUIRED -- 支持当前事务，如果当前没有事务，就新建一个事务。这是最常见的选择。 
+* PROPAGATION_SUPPORTS -- 支持当前事务，如果当前没有事务，就以非事务方式执行。 
+* PROPAGATION_MANDATORY -- 支持当前事务，如果当前没有事务，就抛出异常。 
+* PROPAGATION_REQUIRES_NEW -- 新建事务，如果当前存在事务，把当前事务挂起。 
+* PROPAGATION_NOT_SUPPORTED -- 以非事务方式执行操作，如果当前存在事务，就把当前事务挂起。 
+* PROPAGATION_NEVER -- 以非事务方式执行，如果当前存在事务，则抛出异常。 
+* PROPAGATION_NESTED -- 如果当前存在事务，则在嵌套事务内执行。如果当前没有事务，则进行与PROPAGATION_REQUIRED类似的操作。 
+前六个策略类似于EJB CMT，第七个（PROPAGATION_NESTED）是Spring所提供的一个特殊变量。 
+它要求事务管理器或者使用JDBC 3.0 Savepoint API提供嵌套事务行为（如Spring的DataSourceTransactionManager） 
+
+### 事务的隔离级别
+
+数据库不考虑隔离存在的问题:1.脏读,2.不可重复读,3.虚读(幻读)
+MySQL数据库为我们提供的四种隔离级别：
+
+* Serializable (串行化)：可避免脏读、不可重复读、幻读的发生。
+* Repeatable read (可重复读)：可避免脏读、不可重复读的发生。
+* Read committed (读已提交)：可避免脏读的发生。
+* Read uncommitted (读未提交)：最低级别，任何情况都无法保证。
+
+在MySQL数据库中默认的隔离级别为Repeatable read (可重复读)。在MySQL数据库中查看当前事务的隔离级别：select @@tx_isolation;
