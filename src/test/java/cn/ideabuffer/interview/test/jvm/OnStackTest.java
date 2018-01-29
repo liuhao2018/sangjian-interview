@@ -16,7 +16,7 @@ public class OnStackTest {
     @Test
     public void alloc() throws InterruptedException {
         long b=System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 1000000; i++) {
             newUser(i);
 //            User u = new User(1, "1");
         }
