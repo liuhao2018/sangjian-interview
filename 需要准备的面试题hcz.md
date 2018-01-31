@@ -43,3 +43,10 @@ MySQL数据库为我们提供的四种隔离级别：
 * Read uncommitted (读未提交)：最低级别，任何情况都无法保证。
 
 在MySQL数据库中默认的隔离级别为Repeatable read (可重复读)。在MySQL数据库中查看当前事务的隔离级别：select @@tx_isolation;
+
+
+### MySQL索引
+
+[MySQL索引背后的数据结构及算法原理](http://blog.codinglabs.org/articles/theory-of-mysql-index.html)
+
+[MySQL索引失效的几种情况](http://www.cnblogs.com/binyue/p/4058931.html)
