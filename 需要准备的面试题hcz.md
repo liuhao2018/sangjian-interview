@@ -50,3 +50,14 @@ MySQL数据库为我们提供的四种隔离级别：
 [MySQL索引背后的数据结构及算法原理](http://blog.codinglabs.org/articles/theory-of-mysql-index.html)
 
 [MySQL索引失效的几种情况](http://www.cnblogs.com/binyue/p/4058931.html)
+
+### 公平锁与非公平锁
+
+* 在公平的锁上，线程按照他们发出请求的顺序获取锁
+* 但在非公平锁上，则允许‘插队’：当一个线程请求非公平锁时，如果在发出请求的同时该锁变成可用状态，那么这个线程会跳过队列中所有的等待线程而获得锁。
+
+### PriorityQueue
+
+[深入理解Java PriorityQueue](http://www.cnblogs.com/CarpenterLee/p/5488070.html)
+
+[java多线程之优先队列PriorityBlockingQueue](http://blog.csdn.net/tianshi_kco/article/details/53026177)
