@@ -61,3 +61,7 @@ MySQL数据库为我们提供的四种隔离级别：
 [深入理解Java PriorityQueue](http://www.cnblogs.com/CarpenterLee/p/5488070.html)
 
 [java多线程之优先队列PriorityBlockingQueue](http://blog.csdn.net/tianshi_kco/article/details/53026177)
+
+### Java并发编程
+
+[CountDownLatch、CyclicBarrier和 Semaphore](http://www.importnew.com/21889.html)
