@@ -47,6 +47,8 @@ MySQL数据库为我们提供的四种隔离级别：
 
 ### MySQL索引
 
+[浅谈算法和数据结构: 十 平衡查找树之B树](http://www.cnblogs.com/yangecnu/p/introduce-b-tree-and-b-plus-tree.html)
+
 [MySQL索引背后的数据结构及算法原理](http://blog.codinglabs.org/articles/theory-of-mysql-index.html)
 
 [MySQL索引失效的几种情况](http://www.cnblogs.com/binyue/p/4058931.html)
