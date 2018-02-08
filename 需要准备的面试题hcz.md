@@ -45,6 +45,16 @@ MySQL数据库为我们提供的四种隔离级别：
 在MySQL数据库中默认的隔离级别为Repeatable read (可重复读)。在MySQL数据库中查看当前事务的隔离级别：select @@tx_isolation;
 
 
+### Full GC
+
+堆内存划分为 Eden、Survivor 和 Tenured/Old 空间,从年轻代空间（包括 Eden 和 Survivor 区域）回收内存被称为 Minor GC，对老年代GC称为Major GC,而Full GC是对整个堆来说的.
+触发Full GC
+* System.gc()方法的调用  
+* 老年代空间不足
+* 永生区空间不足
+* CMS GC时出现promotion failed和concurrent mode failure(对于采用CMS进行老年代GC的程序而言，尤其要注意GC日志中是否有promotion failed和concurrent mode failure两种状况，当这两种状况出现时可能会触发Full GC。)
+* 堆中分配很大的对象 
+
 ### MySQL索引
 
 [浅谈算法和数据结构: 十 平衡查找树之B树](http://www.cnblogs.com/yangecnu/p/introduce-b-tree-and-b-plus-tree.html)
@@ -72,3 +82,15 @@ MySQL数据库为我们提供的四种隔离级别：
 ### Netty 之TCP粘包拆包问题
 
 [Netty精粹之TCP粘包拆包问题](https://my.oschina.net/andylucc/blog/625315)
+
+### java.nio.ByteBuffer
+
+limit：所有对Buffer读写操作都会以limit变量的值作为上限。
+position：代表对缓冲区进行读写时，当前游标的位置。
+capacity：代表缓冲区的最大容量（一般新建一个缓冲区的时候，limit的值和capacity的值默认是相等的）。
+
+### Google ProtoBuf
+
+[Google ProtoBuf简介](http://blog.csdn.net/hailong0715/article/details/52016682)
+
+[Google protobuf序列化以及反序列化](https://www.cnblogs.com/gdpuzxs/p/7081145.html)
