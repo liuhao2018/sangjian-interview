@@ -48,6 +48,8 @@ public class AlgorithmTest {
      * <li>对左右两个小数列重复第二步，直至各区间只有1个数。</li>
      * </ol>
      *
+     * 平均时间复杂度：O(N*logN)
+     *
      * @param a
      * @param start
      * @param end
